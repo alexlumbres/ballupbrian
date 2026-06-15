@@ -1,0 +1,15 @@
+# deps / build
+node_modules/
+.next/
+out/
+dist/
+
+# scratch & local (not part of the site)
+.backups/
+_anim/
+images/shutter_sprite.png
+
+# os / logs
+*.log
+.DS_Store
+.env*.local
