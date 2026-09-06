@@ -9,6 +9,14 @@ dist/
 _anim/
 images/shutter_sprite.png
 
+# cloudflare local state (holds account cache — keep out of the remote)
+.wrangler/
+
+# agent tooling
+.agents/
+.codex/
+skills-lock.json
+
 # os / logs
 *.log
 .DS_Store
