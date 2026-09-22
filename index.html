@@ -98,14 +98,19 @@ html.js.cin-open .hero .shots{opacity:1;transform:none;transition:opacity .7s va
 html.js.cin-open .hero .meta{opacity:1;transform:none;transition:opacity .8s var(--e) .2s}
 html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 /* ===== nav ===== */
-.nav{position:fixed;top:0;left:0;right:0;z-index:200;transition:background .6s var(--e)}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;transition:background .6s var(--e),transform .45s var(--ease-cine)}
+.nav.hide{transform:translateY(-100%)}
 .nav.sc{background:rgba(241,239,233,.7);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--line)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:74px}
 .brandmark{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:22px;letter-spacing:.02em;color:var(--ink)}
 .nav .links{display:flex;gap:28px;align-items:center}
 .nav .links a{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
-.nav .links a:not(.book){color:var(--ink2);transition:color .3s var(--e)}
+.nav .links a:not(.book){position:relative;color:var(--ink2);transition:color .3s var(--e);padding-bottom:3px}
 .nav .links a:not(.book):hover{color:var(--ink)}
+.nav .links a:not(.book)::after{content:"";position:absolute;left:0;bottom:-3px;width:100%;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--e)}
+.nav .links a:not(.book):hover::after{transform:scaleX(1)}
+.nav .links a:not(.book).cur{color:var(--ink)}
+.nav .links a:not(.book).cur::after{transform:scaleX(1)}
 .book{background:var(--ink);color:var(--base);padding:11px 19px;border-radius:100px;transition:transform .5s var(--e),background .5s var(--e),color .5s var(--e)}
 .book:hover{transform:translateY(-2px);background:var(--hover);color:var(--ink)}
 @media(max-width:760px){.nav .links a:not(.book){display:none}}
@@ -261,6 +266,8 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
 .rv.in{opacity:1;transform:none;filter:blur(0)}
 @media(prefers-reduced-motion:reduce){.rv,.mani .big .w{opacity:1!important;transform:none!important;filter:none!important}
   .cloud,.sky-css,.sky-photo,.t,.scroll i{animation:none!important}
+  .nav{transition:background .6s var(--e)!important}
+  .nav.hide{transform:none!important}
   html.js .hero h1{opacity:1!important;transform:none!important;filter:none!important;color:var(--ink)!important}
   .skyintro,.skymark{display:none!important}
   html.js .hero .kick,html.js .hero .uline,html.js .hero .tag,html.js .hero .actions,html.js .hero .shots,html.js .hero .meta,html.js .hero .scroll{opacity:1!important;transform:none!important}}
@@ -478,8 +485,36 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
     });
   })();
 
+  // nav: background-on-scroll + direction-aware hide/reveal + current-section indicator
   var nav=document.getElementById("nav");
-  window.addEventListener("scroll",function(){nav.classList.toggle("sc",window.scrollY>40);},{passive:true});
+  var navReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var navLinks=[].slice.call(nav.querySelectorAll('.links a[href^="#"]:not(.book)'));
+  var navSections=navLinks.map(function(a){return document.querySelector(a.getAttribute("href"));});
+
+  var lastY=window.scrollY,hidden=false,ticking=false;
+  function onScroll(){
+    var y=Math.max(0,window.scrollY),diff=y-lastY;
+    nav.classList.toggle("sc",y>40);
+    if(Math.abs(diff)>4){                 // ignore sub-pixel/trackpad jitter
+      hidden=y>80&&diff>0;                // down past the fold → hide; up, or still near top → show
+      nav.classList.toggle("hide",hidden&&!navReduce);
+      lastY=y;
+    }
+    ticking=false;
+  }
+  window.addEventListener("scroll",function(){if(!ticking){requestAnimationFrame(onScroll);ticking=true;}},{passive:true});
+
+  if(navSections.some(Boolean)){
+    var spy=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var i=navSections.indexOf(e.target);
+        if(i<0||!e.isIntersecting)return;
+        navLinks.forEach(function(l){l.classList.remove("cur");});
+        navLinks[i].classList.add("cur");
+      });
+    },{rootMargin:"-45% 0px -50% 0px"});   // fires when a section crosses the vertical center
+    navSections.forEach(function(s){if(s)spy.observe(s);});
+  }
 
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.12,rootMargin:"0px 0px -6% 0px"});
   document.querySelectorAll(".rv").forEach(function(el,i){el.style.transitionDelay=(Math.min(i%4,3)*70)+"ms";io.observe(el);});
