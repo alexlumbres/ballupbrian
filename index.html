@@ -264,6 +264,13 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 .cta .uline{width:clamp(140px,26vw,440px);height:8px;background:var(--accent);margin:14px auto 0;border-radius:4px}
 .cta p{max-width:42ch;margin:22px auto 0;color:var(--ink);font-weight:600}
 .cta .actions{margin-top:32px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+/* the Calendly widget's own iframe defaults to white on the free plan (the
+   background/text/primary color params only take effect on paid plans) — frame it
+   in the site's existing card language so it reads as intentional either way, the
+   same way the white brand-logo swatches already sit inside cream card sections */
+.book-embed{max-width:920px;margin:44px auto 0;padding:22px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:0 30px 70px -28px rgba(34,48,63,.35);text-align:left}
+.book-embed .calendly-inline-widget{width:100%;border-radius:10px;overflow:hidden}
+@media(max-width:640px){.book-embed{padding:12px}}
 /* FOOTER */
 footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base);padding:72px 0 36px}
 .foot-top{display:flex;justify-content:space-between;gap:28px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.16);padding-bottom:32px;align-items:center}
@@ -318,7 +325,7 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
     <div class="uline"></div>
     <p class="tag tsh">Helping creators make better content — and grow.</p>
     <div class="actions">
-      <a class="btn" id="heroBook" href="https://calendly.com/ballupbrian/30min">Book a call</a>
+      <a class="btn" id="heroBook" href="#book">Book a call</a>
       <a class="btn out" href="#work">See the work</a>
     </div>
     <div class="shots tsh">— Put more shots up —</div>
@@ -455,7 +462,7 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
   <div class="pk-h"><div class="kicker rv" style="justify-content:center"><span class="ln"></span><span class="eyebrow">Work together</span><span class="ln"></span></div><h2 class="rv">Pick a lane.</h2></div>
   <div class="pkgs">
     <div class="pkg rv"><div class="rib">Coming soon</div><div class="name">The Studio</div><div class="price" style="font-size:20px">Coming soon</div><div class="per">Full social management + production</div><ul><li>End-to-end account management</li><li>High-volume posting &amp; planning</li><li>Monthly on-the-ground shoot</li><li>Reels editing &amp; campaign direction</li><li>Weekly analytics &amp; reporting</li></ul><span class="btn out" style="opacity:.45;pointer-events:none;cursor:default">Not yet available</span></div>
-    <div class="pkg feat rv"><div class="rib">1:1 Session</div><div class="name">Instagram Strategy Call</div><div class="price">$100<span class="per"> / 30 min</span></div><div class="per">A focused 1-on-1 session built around your Instagram and where you want to take it.</div><ul><li>Your current Instagram direction</li><li>Creative feedback on your content and feed</li><li>Content and post ideas</li><li>What's working vs. what could improve</li><li>A clear strategy and next steps you can act on after the call</li></ul><a class="btn lt" href="https://calendly.com/ballupbrian/30min">Book a call</a></div>
+    <div class="pkg feat rv"><div class="rib">1:1 Session</div><div class="name">Instagram Strategy Call</div><div class="price">$100<span class="per"> / 30 min</span></div><div class="per">A focused 1-on-1 session built around your Instagram and where you want to take it.</div><ul><li>Your current Instagram direction</li><li>Creative feedback on your content and feed</li><li>Content and post ideas</li><li>What's working vs. what could improve</li><li>A clear strategy and next steps you can act on after the call</li></ul><a class="btn lt" href="#book">Book a call</a></div>
     <div class="pkg rv"><div class="rib">Coming soon</div><div class="name">Production</div><div class="price" style="font-size:20px">Coming soon</div><div class="per">Documentary &amp; campaign one-offs</div><ul><li>Short-form documentary / mini-doc</li><li>Event &amp; recap videography</li><li>Cinematic athlete / brand edits</li><li>Full direction, filming &amp; post</li></ul><span class="btn out" style="opacity:.45;pointer-events:none;cursor:default">Not yet available</span></div>
   </div>
   <p class="pkg-note">More ways to work together coming soon — for now, book the 1:1 strategy call above.</p>
@@ -467,8 +474,14 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
   <h2 class="rv tsh" style="margin-top:12px">PUT MORE<br>SHOTS UP.</h2>
   <div class="uline"></div>
   <p class="rv tsh">Book a free strategy call and we'll map your goals to a content system that actually moves the numbers.</p>
+
+  <div class="book-embed rv">
+    <div class="calendly-inline-widget" data-url="https://calendly.com/ballupbrian/30min?hide_gdpr_banner=1&background_color=e5dfd6&text_color=2c3e50&primary_color=2c3e50" data-resize="true" style="min-width:280px;height:700px;"></div>
+    <noscript><p>Enable JavaScript to book right on this page, or <a href="https://calendly.com/ballupbrian/30min" target="_blank" rel="noopener">open the scheduler directly ↗</a>.</p></noscript>
+  </div>
+  <p class="work-note">Calendar not loading? <a href="https://calendly.com/ballupbrian/30min" target="_blank" rel="noopener">Open it directly ↗</a></p>
+
   <div class="actions rv">
-    <a class="btn" id="ctaBook" href="https://calendly.com/ballupbrian/30min">Book a strategy call</a>
     <a class="btn out" id="ctaEmail" href="mailto:ballupbrian@gmail.com?subject=Strategy%20call%20-%20BallUpBrian">Email us</a>
   </div>
 </div></section>
@@ -562,6 +575,23 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
       });
       r.addEventListener("mouseleave",function(){rev.classList.remove("on");if(videoPath)revVid.pause();});
     });
+  }
+
+  // lazy-load the Calendly widget script only once the booking section is nearly
+  // in view, rather than fetching it unconditionally on every page load
+  var bookSection=document.getElementById("book");
+  if(bookSection){
+    var bio=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          var s=document.createElement("script");
+          s.src="https://assets.calendly.com/assets/external/widget.js";
+          document.body.appendChild(s);
+          bio.disconnect();
+        }
+      });
+    },{rootMargin:"600px 0px"});
+    bio.observe(bookSection);
   }
 </script>
 </body>
