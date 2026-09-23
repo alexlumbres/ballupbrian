@@ -475,11 +475,11 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
   <div class="uline"></div>
   <p class="rv tsh">Book a free strategy call and we'll map your goals to a content system that actually moves the numbers.</p>
 
-  <div class="book-embed rv">
-    <div class="calendly-inline-widget" data-url="https://calendly.com/ballupbrian/30min?hide_gdpr_banner=1&background_color=e5dfd6&text_color=2c3e50&primary_color=2c3e50" data-resize="true" style="min-width:280px;height:700px;"></div>
+  <div class="book-embed rv" id="bookEmbed">
+    <div class="calendly-inline-widget" id="calendlyWidget" data-url="https://calendly.com/ballupbrian/30min?hide_gdpr_banner=1&background_color=e5dfd6&text_color=2c3e50&primary_color=2c3e50" data-resize="true" style="min-width:280px;height:700px;"></div>
     <noscript><p>Enable JavaScript to book right on this page, or <a href="https://calendly.com/ballupbrian/30min" target="_blank" rel="noopener">open the scheduler directly ↗</a>.</p></noscript>
   </div>
-  <p class="work-note">Calendar not loading? <a href="https://calendly.com/ballupbrian/30min" target="_blank" rel="noopener">Open it directly ↗</a></p>
+  <p class="work-note" id="bookFallback" style="display:none">Having trouble loading the calendar? <a href="https://calendly.com/ballupbrian/30min" target="_blank" rel="noopener">Open it directly ↗</a></p>
 
   <div class="actions rv">
     <a class="btn out" id="ctaEmail" href="mailto:ballupbrian@gmail.com?subject=Strategy%20call%20-%20BallUpBrian">Email us</a>
@@ -578,20 +578,38 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
   }
 
   // lazy-load the Calendly widget script only once the booking section is nearly
-  // in view, rather than fetching it unconditionally on every page load
+  // in view, rather than fetching it unconditionally on every page load. Show the
+  // "open directly" fallback only if the embed actually fails to appear — blocked
+  // script, blocked iframe (ad-blockers commonly target Calendly), or it simply
+  // never renders in a reasonable time — not unconditionally alongside a working embed.
   var bookSection=document.getElementById("book");
   if(bookSection){
     var bio=new IntersectionObserver(function(es){
       es.forEach(function(e){
         if(e.isIntersecting){
-          var s=document.createElement("script");
-          s.src="https://assets.calendly.com/assets/external/widget.js";
-          document.body.appendChild(s);
+          loadCalendly();
           bio.disconnect();
         }
       });
     },{rootMargin:"600px 0px"});
     bio.observe(bookSection);
+    function loadCalendly(){
+      var fallback=document.getElementById("bookFallback");
+      var widget=document.getElementById("calendlyWidget");
+      var loaded=false;
+      var mo=widget&&new MutationObserver(function(){
+        if(widget.querySelector("iframe")){loaded=true;mo.disconnect();}
+      });
+      if(mo)mo.observe(widget,{childList:true});
+      var s=document.createElement("script");
+      s.src="https://assets.calendly.com/assets/external/widget.js";
+      s.onerror=function(){if(fallback)fallback.style.display="";};
+      document.body.appendChild(s);
+      setTimeout(function(){
+        if(mo)mo.disconnect();
+        if(!loaded&&fallback)fallback.style.display="";
+      },6000);
+    }
   }
 </script>
 </body>
