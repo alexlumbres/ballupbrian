@@ -27,6 +27,7 @@ html{scroll-behavior:smooth;background:#CFDCE6}
 body{color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;background:transparent}
 a{color:inherit;text-decoration:none}
 img{display:block;width:100%;height:100%;object-fit:cover}
+video{display:block;width:100%;height:100%;object-fit:cover}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 30px}
 .anton{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:-.005em;line-height:.86}
 .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink2);font-weight:700}
@@ -207,7 +208,11 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 .srow:hover .ar{transform:translate(6px,-6px);color:var(--ink)}
 .reveal-img{position:fixed;top:0;left:0;width:260px;height:330px;border-radius:8px;overflow:hidden;pointer-events:none;z-index:120;opacity:0;transform:translate(-50%,-50%) scale(.82);transition:opacity .35s var(--e),transform .5s var(--e);box-shadow:0 30px 70px -28px rgba(34,48,63,.5)}
 .reveal-img.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
-@media(max-width:760px){.reveal-img{display:none}.srow{grid-template-columns:36px 1fr auto}}
+/* the hover-preview panel is a mouse-hover interaction; gate it on actual pointer
+   capability, not viewport width, so a touchscreen device at desktop width doesn't
+   get a panel it can never dismiss */
+@media not all and (hover:hover) and (pointer:fine){.reveal-img{display:none}}
+@media(max-width:760px){.srow{grid-template-columns:36px 1fr auto}}
 /* RESULTS (navy band) */
 .proof{position:relative;background:linear-gradient(180deg,var(--dark),var(--dark2));color:var(--base);border-radius:0}
 .proof .kicker .ln{background:var(--accent)}.proof .kicker .eyebrow{color:var(--accent)}
@@ -400,12 +405,12 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
   <div class="svc-list" id="svcList">
     <a class="srow" href="#book" data-img="images/work/05.jpg"><span class="num">01</span><span class="ti">Social Strategy &amp; Consulting</span><span class="ar">↗</span></a>
     <a class="srow" href="#book" data-img="images/work/02.jpg"><span class="num">02</span><span class="ti">Campaign Direction</span><span class="ar">↗</span></a>
-    <a class="srow" href="#book" data-img="images/work/06.jpg"><span class="num">03</span><span class="ti">Documentary Production</span><span class="ar">↗</span></a>
-    <a class="srow" href="#book" data-img="images/work/04.jpg"><span class="num">04</span><span class="ti">Freelance Videography</span><span class="ar">↗</span></a>
+    <a class="srow" href="#book" data-video="images/services/documentary.mp4" data-poster="images/services/documentary-poster.jpg"><span class="num">03</span><span class="ti">Documentary Production</span><span class="ar">↗</span></a>
+    <a class="srow" href="#book" data-video="images/services/freelance.mp4" data-poster="images/services/freelance-poster.jpg"><span class="num">04</span><span class="ti">Freelance Videography</span><span class="ar">↗</span></a>
     <a class="srow" href="#book" data-img="images/work/01.jpg"><span class="num">05</span><span class="ti">Content Creation</span><span class="ar">↗</span></a>
   </div>
 </div></section>
-<div class="reveal-img" id="revImg"><img id="revImgSrc" alt="" onerror="this.parentNode.style.background='linear-gradient(180deg,#C6D6E2,#E1E7EA)'"></div>
+<div class="reveal-img" id="revImg"><img id="revImgSrc" alt="" onerror="this.parentNode.style.background='linear-gradient(180deg,#C6D6E2,#E1E7EA)'"><video id="revVidSrc" muted loop playsinline preload="none"></video></div>
 
 <!-- RESULTS -->
 <section class="sec proof" id="results"><div class="wrap">
@@ -534,14 +539,30 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
     line.innerHTML=out.join("");var ws=line.querySelectorAll(".w");
     var lio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ws.forEach(function(w,i){setTimeout(function(){w.classList.add("in");},i*52);});lio.disconnect();}});},{threshold:.3});lio.observe(line);}
 
-  var rev=document.getElementById("revImg"),revSrc=document.getElementById("revImgSrc");
-  var rows=document.querySelectorAll("#svcList .srow"),mx=0,my=0,rafm=false;
-  function move(){rev.style.left=mx+"px";rev.style.top=my+"px";rafm=false;}
-  window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;if(!rafm){rafm=true;requestAnimationFrame(move);}});
-  rows.forEach(function(r){
-    r.addEventListener("mouseenter",function(){revSrc.src=r.getAttribute("data-img");rev.classList.add("on");});
-    r.addEventListener("mouseleave",function(){rev.classList.remove("on");});
-  });
+  // service-row hover preview: mouse/trackpad only — on touch devices this feature
+  // is never wired up, so no image or video byte is ever fetched for it.
+  var canHover=window.matchMedia&&window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  if(canHover){
+    var rev=document.getElementById("revImg"),revSrc=document.getElementById("revImgSrc"),revVid=document.getElementById("revVidSrc");
+    var rows=document.querySelectorAll("#svcList .srow"),mx=0,my=0,rafm=false;
+    function move(){rev.style.left=mx+"px";rev.style.top=my+"px";rafm=false;}
+    window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;if(!rafm){rafm=true;requestAnimationFrame(move);}});
+    rows.forEach(function(r){
+      var videoPath=r.getAttribute("data-video");
+      r.addEventListener("mouseenter",function(){
+        if(videoPath){
+          revSrc.style.display="none";revVid.style.display="";
+          if(revVid.dataset.current!==videoPath){revVid.src=videoPath;revVid.poster=r.getAttribute("data-poster")||"";revVid.dataset.current=videoPath;}
+          revVid.play().catch(function(){});
+        }else{
+          revVid.style.display="none";revVid.pause();revSrc.style.display="";
+          revSrc.src=r.getAttribute("data-img");
+        }
+        rev.classList.add("on");
+      });
+      r.addEventListener("mouseleave",function(){rev.classList.remove("on");if(videoPath)revVid.pause();});
+    });
+  }
 </script>
 </body>
 </html>

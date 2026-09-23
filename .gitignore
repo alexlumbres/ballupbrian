@@ -7,6 +7,7 @@ dist/
 # scratch & local (not part of the site)
 .backups/
 _anim/
+_source-video/
 images/shutter_sprite.png
 
 # cloudflare local state (holds account cache — keep out of the remote)
