@@ -125,6 +125,14 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 .hero .meta{position:absolute;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2);font-weight:600}
 .hero .meta.tl{top:104px;left:30px}.hero .meta.tr{top:104px;right:30px}
 .hero .meta.bl{bottom:34px;left:30px}.hero .meta.br{bottom:34px;right:30px}
+@media(max-width:600px){
+  /* tl/tr and bl/br sit on opposite sides of the same line on desktop — at
+     narrow widths the two texts are wide enough to run into each other, so
+     stack each pair into two lines instead of side-by-side */
+  .hero .meta{font-size:9.5px;letter-spacing:.16em;left:24px;right:24px;text-align:left}
+  .hero .meta.tl{top:98px}.hero .meta.tr{top:118px}
+  .hero .meta.bl{bottom:132px}.hero .meta.br{bottom:112px}
+}
 .hero .core{position:relative}
 .hero .kick{display:block;margin-bottom:16px}
 .hero h1{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(64px,16vw,232px);line-height:.82;letter-spacing:-.01em;color:var(--ink)}
@@ -169,6 +177,7 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 /* WORK GRID */
 .work-h{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;margin-bottom:36px}
 .work-h h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(40px,8vw,120px);line-height:.84;color:var(--ink)}
+@media(max-width:520px){.work-h h2{line-height:1.02}}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .tile{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:8px;background:linear-gradient(180deg,#C6D6E2,#E1E7EA);cursor:pointer;border:1px solid var(--line);
   transition:transform .5s var(--e),box-shadow .5s var(--e)}
@@ -212,11 +221,14 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
    capability, not viewport width, so a touchscreen device at desktop width doesn't
    get a panel it can never dismiss */
 @media not all and (hover:hover) and (pointer:fine){.reveal-img{display:none}}
+.touch-only{display:none}
+@media not all and (hover:hover) and (pointer:fine){.hov-only{display:none}.touch-only{display:inline}}
 @media(max-width:760px){.srow{grid-template-columns:36px 1fr auto}}
 /* RESULTS (navy band) */
 .proof{position:relative;background:linear-gradient(180deg,var(--dark),var(--dark2));color:var(--base);border-radius:0}
 .proof .kicker .ln{background:var(--accent)}.proof .kicker .eyebrow{color:var(--accent)}
 .proof h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(40px,7vw,96px);line-height:.84}
+@media(max-width:520px){.proof h2{line-height:1.02}}
 .rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:40px 30px 8px;margin:0 -30px;scrollbar-width:none}
 .rail::-webkit-scrollbar{display:none}
 .pcard{scroll-snap-align:start;flex:0 0 320px;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:28px;min-height:280px;display:flex;flex-direction:column;justify-content:space-between;transition:border-color .4s,transform .5s var(--e),background .4s}
@@ -260,6 +272,7 @@ html.js.cin-open .hero .scroll{opacity:1;transition:opacity .8s var(--e) .62s}
 /* CTA */
 .cta{text-align:center;padding:150px 0}
 .cta h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(54px,14vw,200px);line-height:.82;color:var(--ink)}
+@media(max-width:520px){.cta h2{line-height:1}}
 .cta .uline{width:clamp(140px,26vw,440px);height:8px;background:var(--accent);margin:14px auto 0;border-radius:4px}
 .cta p{max-width:42ch;margin:22px auto 0;color:var(--ink);font-weight:600}
 .cta .actions{margin-top:32px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
@@ -403,7 +416,7 @@ footer{background:linear-gradient(180deg,var(--dark2),#1a2733);color:var(--base)
 <section class="sec" id="services"><div class="wrap">
   <div class="svc-h">
     <div><div class="kicker rv"><span class="ln"></span><span class="eyebrow">What we do</span></div><h2 class="rv">Services</h2></div>
-    <p class="rv" style="max-width:30ch;color:var(--ink2);font-weight:500">Hover a discipline. Strategy, production and post — end-to-end.</p>
+    <p class="rv" style="max-width:30ch;color:var(--ink2);font-weight:500"><span class="hov-only">Hover</span><span class="touch-only">Tap</span> a discipline. Strategy, production and post — end-to-end.</p>
   </div>
   <div class="svc-list" id="svcList">
     <a class="srow js-book" href="https://calendly.com/ballupbrian/30min" data-img="images/work/05.jpg"><span class="num">01</span><span class="ti">Social Strategy &amp; Consulting</span><span class="ar">↗</span></a>
